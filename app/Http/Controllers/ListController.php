@@ -16,16 +16,6 @@ class ListController extends Controller
         $items = Item::all();
         return response()->json($items);
     }
-    public function getCount()
-    {
-        $completed = Item::where('status','=','1')->selectRaw('count(*) as completed')->get()->toArray();
-        $pending = Item::where('status','=','0')->selectRaw('count(*) as pending')->get()->toArray();
-        $json = '[';
-        $json .=    '{"completed":"'.$completed[0]['completed'].'","pending":"'.$pending[0]['pending'].'"}';
-        $json .= ']';
-        return $json;
-    }
-    //Create a new Item to the list
     public function create(Request $request)
     {
         $item = new Item;
@@ -33,8 +23,7 @@ class ListController extends Controller
         $item->status = $request->status;
         $item->save();
         return response()->json('Successfully added');
-    }
-    
+    }   
     //Delete a Item from the list
     public function delete($id)
     {
@@ -57,21 +46,4 @@ class ListController extends Controller
         $item = Item::find($id);
         return response()->json($item);
     }
-
-    //Search for the Item (Just AutoComplete)
-    public function search(Request $request)
-    {
-        $term = $request->term;
-        $items = Item::where('item', 'LIKE', '%'.$term.'%')->get();
-        //return $item;
-        if(count($items) == 0){
-            $searchResult[] = 'No item found !';
-        }else{
-            foreach($items as $item){
-                $searchResult[] = $item->item; 
-            }
-        }
-        return $searchResult;    
-    }
-
 }
